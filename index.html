@@ -1,0 +1,1134 @@
+<html lang="en" class="html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="styleSheet" href="./index.css" >
+    <title>Task</title>
+<style>
+        body {
+  background-color:white;
+}
+
+@media screen and (min-width: 480px) {
+  body {
+    background-color: white;
+  }
+}
+</style>
+</head>
+
+<body>
+    <div class="page">
+        <div class="page1">
+            <h4>ACR Transactions on Symmetric Cryptology <br />ISSN 2519-173X, Vol. 2022, No. 2, pp. 141–160</h4>
+        </div>
+        <div class="pge1"><a href="https://tosc.iacr.org/index.php/ToSC/article/view/9717" >DOI:10.46586/tosc.v2022.i2.141.160</a></div>
+        <br/>
+        <div class="pge2">
+        <div class="pge3"><h1>Truncated Differential Attacks on Contracting <br />Feistel Ciphers</h1>
+                <h4>Tim Beyne <sup>1</sup> and Yunwen Liu<sup>2</sup></h4>
+                <p><sup>1</sup>imec - Computer Security and Industrial Cryptography (COSIC) Research Group,
+                    Department<br />of Electrical Engineering (ESAT), KU Leuven, Belgium</p>
+                <span>tim.beyne@esat.kuleuven.be</span>
+                <p> <sup>2</sup> Independent researcher, China</p>
+                <span>univerlyw@hotmail.com</span></div>
+        <div class="pge4">
+            <p><b>Abstract.</b> We improve truncated differential attacks on t-branch contracting Feistel <br />ciphers
+                with a domain size of Nt. Based on new truncated differentials, a generic <br />distinguisher for t2 + t
+                − 2 rounds using O(Nt−1) data and time is obtained. In <br />addition, we obtain a key-recovery attack
+                on t2 + 1 rounds with Oe(Nt−2) data <br /> and Oe(Nt−1) time. Compared to previous results by Guo et al.
+                (ToSC 2016), our<br />
+                attacks cover more rounds with a lower data-complexity. Applications of the generic<br />
+                truncated differential to concrete ciphers include full-round attacks on some instances<br />
+                of GMiMC-crf, and the best-known key-recovery attack on 17 rounds of the Chinese<br />
+                block cipher standard SM4. In addition, we propose an automated search method for<br />
+                truncated differentials using SMT, which is effective even for trails with probability<br />
+                below the probability of the truncated differential for a random permutation.<br /><br />
+                <b>Keywords:</b> Truncated differentials · Contracting Feistel ciphers · SMT · GMiMC ·
+                SM-4
+            </p>
+            <h1>1  Introduction </h1>
+            <p> Following its inception by Horst Feistel in the 1970s, the Feistel structure has become<br/>
+                one of the most prominent architectures in modern block cipher design. One of its most<br/>
+                eminent applications is undoubtedly the former American block cipher standard DES.<br/>
+                Hence, it is not unexpected that the design and analysis of variants of the Feistel structure<br/>
+                has become a significant research topic with valuable applications.<br/>
+                Following the widespread use of Feistel ciphers, many variations on the original structure<br/>
+                were proposed. One of the main directions of this research has been the exploration of<br/>
+                Feistel-like structures with more than two branches. Examples include the family of<br/>
+                generalized Feistel ciphers <b>[Nyb96,ZMI90]</b> and the unbalanced Feistel ciphers discussed by<br/>
+                Schneier and Kelsey <b>[SK96]</b>. The family of unbalanced Feistel structures can be further<br/>
+                subdivided into expanding and contracting constructions. This paper is concerned with<br/>
+                the security of the latter structure. Figure 1 shows a single Feistel round of a contracting<br/>
+                Feistel cipher with t = 4 branches.<br/>
+                Examples of contracting Feistel ciphers include the algebraic cipher GMiMC-crf <b>[AGP+19]</b><br/>
+                and the general-purpose block cipher SM4 <b>[Dt08].</b> The latter example is particularly im-<br/>
+                portant, as SM4 is the Chinese commercial block cipher standard (GB/T 32907-2016). In<br/>
+                addition, it has been standardized by ISO/IEC under the reference number 18033-3:2010.<br/>
+                Given their widespread application, it is not surprising that the security analysis of<br/>
+                Feistel ciphers and their variants has been an industrious area of research. Luby and</p>
+                <hr style="margin-left:0rem;"/>
+                <h4>Tim Beyne is supported by a PhD Fellowship from the Research Foundation – Flanders (FWO).</h4>
+                <p>Licensed under<span><a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons License CC-BY 4.0</a></span></p>
+                <p>Received: 2021-11-23 Revised: 2022-03-01 Accepted: 2022-05-01 Published: 2022-06-10</p>
+        </div>   
+    </div>
+    <br/>
+    <div class="page3">
+        <span style="color: black;">142</span> <p style="margin-left:150px;margin-top: -17px;"> Truncated Differential Attacks on Contracting Feistel Ciphers</p>
+        <hr style="margin-left: 0rem;"/>
+        <img src="./images/page2.jpg" alt="drawing" style="width:30rem;height:15rem">
+        <p><b style="color:black"> Figure 1:</b> One round of a contracting Feistel cipher with t = 4 branches. The function Fi<br/>
+            is a permutation and possibly key-dependent.</p>
+            <p>Rackoff <b>[LR86]</b> were first to prove the indistinguishability of three-round Feistel ciphers<br/>
+                with uniform random round functions. Yun, Park and Lee <b>[YPL11]</b> proved the birthday <br/>bound security of t-branch1
+                contracting Feistel ciphers with 2t − 1 rounds. However, from<br/>
+                a practical point of view, optimal security is expected and desired if the number of rounds<br/>
+                is large enough. Hence, several works have proposed generic attacks on contracting Feistel<br/>
+                ciphers – thereby lower bounding the number of rounds necessary for security. In particular,<br/>
+                Guo et al. [GJNS16] describe meet-in-the-middle attacks on contracting Feistel ciphers.<br/>
+                Patarin, Nachef and Berbain [PNB06] analyze a more general contracting structure.<br/>
+                Differential cryptanalysis [BS91] has proven to be one of the most successful tools in<br/>
+                the security analysis of both concrete and generic Feistel structures. For example, the<br/>
+                generic attacks of Patarin [Pat04] on ordinary Feistel ciphers are based on differential<br/>
+                cryptanalysis. The differential attack itself has also been extended and generalized in<br/>
+                several ways. At FSE 1994, Knudsen [Knu95] introduced a powerful extension known as<br/>
+                truncated differential cryptanalysis.<br/>
+                In this paper, we analyze the security of generic contracting Feistel ciphers using<br/>
+                truncated differentials. Our motivation for doing so is twofold. On the one hand, from<br/>
+                the viewpoint of block cipher design, it is important to know the baseline number of<br/>
+                rounds required for security. In other words: how many rounds does a t-branch contracting<br/>
+                Feistel cipher need? On the other hand, new generic attacks may have an impact on the<br/>
+                security of concrete ciphers such as GMiMC-crf and SM4. SM4 in particular has received a<br/>
+                significant amount of dedicated cryptanalysis and given its status as both a domestic and<br/>
+                international standard, further advances in its analysis would be of interest to observers</p>
+                <p><b style="color:black">Contributions.</b> Improved generic attacks on contracting Feistel ciphers are obtained using<br/>
+                    truncated differential cryptanalysis. In particular, when the security-level is equal to the<br/>
+                    block size, we obtain distinguishers and key-recovery attacks on more rounds than previous<br/>
+                    works for any number of branches. As an immediate consequence, full-round attacks on<br/>
+                    some instances of GMiMC-crf are obtained. In addition, our attacks lead to the best-known<br/>
+                    key-recovery attack on 17-round SM4.<br/>
+                    With respect to generic attacks, the main result of this paper is a distinguisher on<br/>
+                    t
+                    2 + t − 2 rounds of a contracting Feistel cipher with t branches and a domain of size Nt<br/>
+                    using O(Nt−1
+                    ) data and time. In addition, we obtain a key-recovery attack on t
+                    2 + 1<br/>
+                    rounds requiring Oe(Nt−2
+                    ) data and Oe(Nt−1
+                    ) time. This is a significant improvement over<br/>
+                    the results of Guo et al. [GJNS16]. In particular, the key-recovery attacks of Guo et al.<br/>
+                    cover at most 5t − 4 rounds (assuming the key length is equal to the block length).<br/>
+                    The starting point for our attacks is an iterated truncated differential for generic<br/>
+                    contracting Feistel ciphers. It is similar to a truncated differential for the expanding<br/>
+                    Feistel cipher GMiMC-erf [AGP+19] that was presented at CRYPTO 2020 [BCD+20].<br/>
+                    The basic iterated differential covers at most t
+                    2 − t − 2 rounds. Our final (t
+                    2 + t − 2)-</p>
+                    <hr style="margin-left: 0rem;"/>
+                    <p>1The number of branches t must be even in order to avoid a trivial differential distinguisher</p>
+
+    </div>
+    <div class="page4">
+        <span style="color: black;">142</span> 
+        <p style="margin-left:250px;margin-top: -17px;"> Truncated Differential Attacks on Contracting Feistel Ciphers</p>
+    </div>
+    <div class="pge5">
+        <p>round distinguisher is based on a different truncated differential that relies on several<br/>
+            improvements not considered in previous work on contracting or expanding Feistel ciphers.<br/>
+            In particular, we consider truncated differential trails whose probability ptrail is lower<br/>
+            than their ideal probability pideal, take advantage of relations between input and output<br/>
+            differences, and optimize the trade-off between the size of input structures and other<br/>
+            parameters such as ptrail and pideal.<br/>
+            When applied to the algebraic cipher GMiMC-crf, the aforementioned attacks result<br/>
+            in full-round distinguishers and key-recovery attacks for some instances. However, the<br/>
+            practical relevance of these attacks may be relatively limited because most applications<br/>
+            of GMiMC-crf use a relatively small number of branches t but a large N. In such cases,<br/>
+            algebraic attacks become the dominant threat vector.<br/>
+            The data- and time-complexity of our 18-round distinguisher on SM4 are approximately<br/>
+            296. For 17-round SM4, we obtain a key-recovery attack using 270 chosen plaintexts and<br/>
+            299 encryption operations. Although dedicated attacks on SM4 reach up to 23 rounds,<br/>
+            their data- and time-complexity is extremely large. As will be argued in Section 6, our<br/>
+            key-recovery attack is the best-known attack for 17 rounds. This is remarkable given the<br/>
+            fact that our attacks do not use any details about the round function of SM4.<br/>
+            Finally, we show how the propagation of truncated differentials in a contracting Feistel<br/>
+            cipher can be modelled as a Satisfiability Modulo Theories (SMT) problem. This allows<br/>
+            us to show that the distinguishers we obtain for t = 4 have optimal data-complexity.<br/>
+            Importantly, our SMT model is able to analyze truncated differentials with ptrail  pideal.<br/>
+            This is in contrast to previous methods, such as the MILP-based method from [BCD+20].<br/>
+            In addition, our model allows for dependencies between the input and output differences.<br/>
+            <br/>
+            <b style="color:black">Outline.</b> The main preliminaries are introduced in Section 2. The generic distinguishers<br/>
+            are gradually built-up throughout the paper. We begin by exhibiting a new iterated<br/>
+            truncated differential and deriving a basic distinguisher for t
+            2 − t − 1 rounds in Section 3.<br/>
+            In Section 4, improved truncated differential distinguishers are constructed. We optimize<br/>
+            the selection of the input structure using dependencies between the input and output<br/>
+            differences, and obtain distinguishers for t2 + t − 2 and t2rounds. We show that our<br/>
+            16-round trail for t = 4 is optimal using SMT in Section 4.2, and verify the distinguishers<br/>
+            experimentally in Section 4.3. Key recovery attacks are discussed in Section 5. Section 6<br/>
+            concludes by discussing the application of our attacks to GMiMC-crf and SM4.</p>
+            <br/>
+            <h1>2  Preliminaries </h1><br/>
+            <p>Throughout this paper, we let U be a finite-dimensional vector space over a finite field.<br/>
+                Furthermore, let N = |U| denote the cardinality of the set U. That is, N = p
+                n with p a <br/>
+                prime and n a positive integer.<br/><br/>
+                <b style="color:black">Contracting Feistel ciphers</b>. Contracting Feistel ciphers are a type of generalized unbal<br/>anced Feistel structure. As illustrated in Figure 1 for t = 4, a Feistel round of a contracting<br/>
+                Feistel cipher R : U
+                t → U
+                t with t branches is defined as R : (x1, x2, . . . , xt) 7→ (y1, y2, . . . , yt)<br/>
+                where<br/><br/>
+                <div class="my">yi = xi+1 for i = 1, 2, . . . , t − 1 ,</div><br/><br/>
+                <div class="my">yt = x1 + F(x2 + x3 + . . . + xt).</div><br/><br/>
+                Here, F is called the round function of the contracting Feistel cipher and is often key<br/>dependent. The round function F can take various forms. For instance, the round function<br/>
+                of SM4 has a Shark-like structure consisting of an S-box layer followed by a multiplication<br/>
+                with an MDS matrix [Dt08]. For GMiMC-crf [AGP+19], F(x) = x
+                3
+                , assuming U is a finite<br/>
+                </p>
+    </div>
+    <div class="page6">
+        <h4>144 Truncated Differential Attacks on Contracting Feistel Ciphers</h4>
+        <hr /></div>
+        <div class="pge6">
+            <p>field. Since the attacks in this paper are generic and do not exploit the inner structure of<br/>
+                the round function and key schedule, we omit further details.<br/>
+                <b style="color:black">Differentials. </b>For a function E : Ut → Ut and input and output differences a, b ∈ Ut, the<br/>
+probability of a differential propagation from a to b through F is defined as (recall that<br/>
+|U| = N)<br/>
+<div class="my">b] = |{x ∈ Ut| E(x + a) − E(x) = b}|N</div> <sup>t</sup><br/>
+.
+The propagation a → b is called a differential over F, and it gives a distinguishing property<br/>
+if the probability Pr[a → b] is significantly larger than 1/Nt
+. Roughly speaking, one needs<br/>
+1/Pr[a → b] queries to F to distinguish it from a random permutation.<br/>
+<b style="color:black">Truncated differentials</b>. An important extension of differential cryptanalysis is the so<br/>called truncated differential attack, first proposed by Knudsen [Knu95]. In the following,<br/>
+we describe the most general form of truncated differentials. Let A and B be subsets of<br/>
+U <sup>t</sup>
+. The probability of the truncated differential for E with input set A and output set B<br/>
+is defined by<br/>
+<div class="my">Pr[AE−→ B] = Pr[F(x) − F(y) ∈ B | x − y ∈ A] ,</div><br/><br/>
+where x and y are independent uniform random variables on Ut. Equivalently,<br/><br/>
+<div class="my">B] = 1|A|Xa∈APr[E(x + a) − E(x) ∈ B] .</div> <br/><br/>
+A truncated differential with A = B will be called iterative or iterated.<br/>
+<b style="color:black">Markov ciphers</b>. Directly evaluating the probability of a (truncated) differential over<br/>
+a block cipher is usually not feasible. However, using the iterated structure of most<br/>
+block ciphers and the Markov cipher assumption, one can approximate the probability of<br/>
+differentials by the probability of differential characteristics. Let Ek denote an r round<br/>
+block cipher with key k = (k1, . . . , kr) and round functions <div class="my">
+1k1, R2k2, . . . , Rrkr. That is,<br/><br/>
+Ek = Rrkr◦ · · · ◦ R2k2◦ R1k1.<br/><br/></div>
+The block cipher Ek with a random key k is called a Markov cipher <b>[LMM91]</b> if for any i<br/>
+and a, b, x, y ∈ U
+t
+,<br/><br/>
+<div class="my">Pr[R
+    i
+    ki
+    (x + a) − R
+    i
+    ki
+    (x) = b] = Pr[R
+    i
+    ki
+    (y + a) − R
+    i
+    ki
+    (y) = b] ,</div><br/><br/>
+where the probabilities are only with respect to the random key ki
+. This implies that the<br/>
+sequence of intermediate differences for a fixed input pair under Ek form a homogeneous<br/>
+Markov chain. Contracting Feistel ciphers such as SM4 and GMiMC-crf satisfy this property<br/>
+when instantiated with independent round keys.<br/>
+A differential characteristic for Ek is a sequence of intermediate differences a1 → a2 →<br/>
+· · · → ar+1 such that ai → ai+1 is a differential for Rki
+for i = 1, . . . , r. If Ek is a Markov<br/>
+cipher, then the probability of the differential characteristic a1 → ar+1 satisfies<br/><br/>
+<div class="my">Pr[a1 → a2 → · · · → ar+1] = Yr
+    i=1
+    Pr[ai → ai+1].</div><br/><br/>
+Note that the above probability is with respect to the random key k. Equivalently, it is<br/>
+equal to the key-averaged probability of the differential characteristic. For the sake of<br/>
+completeness, we mention that the key-averaged probability of a differential a1 → ar+1<br/>
+</p>
+    </div>
+    <div class="page7">
+        <h4>145 Tim Beyne and Yunwen Liu</h4>
+<hr/></div>
+    </div>
+    <div class="pge7">
+       <p> for a Markov cipher Ek is the sum of the probabilities of all characteristics with input<br/>
+difference a1 and output difference ar+1:<br/><br/>
+<div class="my">Pr[a1
+    Ek −→ ar+1] = X
+    a2,...,ar∈Ut
+    Yr
+    i=1
+    Pr[ai → ai+1] .</div>
+<br/><br/>
+<b style="color:black">Input-output dependencies.</b> When dealing with truncated differentials, it is sometimes<br/>
+convenient to use dependencies between input and output differences. A simple example is<br/>
+the property that any input difference from a set A results in the same output difference,<br/>
+rather than just any difference in the set A.<br/>
+A convenient way to describe such properties without leaving the usual framework for<br/>
+truncated differentials from above, is to consider the input-extended cipher E : U
+t × U
+t →<br/>
+U
+t × U
+t defined by (x, y) 7→ (x, E(y)). Indeed, if A = {(a, a) | a ∈ A} and B ⊆ U
+t × U
+t
+,<br/>
+then we have<br/><br/><div class="my">Pr [A
+    E
+    −→ B] = Pr[(x − y, E(x) − E(y)) ∈ B | x − y ∈ A] </div>
+,<br/><br/>
+with x and y uniform random on U <sup>t</sup>
+. The right-hand side above is indeed the desired<br/>
+probability. Ordinary truncated differentials correspond to the case B = A × C for some<br/>
+output difference set C</p>
+<h1>3 Basic Truncated Differential Distinguisher</h1><br/>
+<p>In Section 3.1, we exhibit a first t-round iterated truncated differential for generic con<br/>tracting Feistel ciphers and show that it leads to interesting distinguishers. This truncated<br/>
+    differential bears similarity to the truncated<br/> differential from <b>[BCD+20, §5.2]</b> for the<br/>
+    expanding Feistel cipher GMiMC-erf. A comparison with the latter attack and a previous<br/>
+    truncated differential attack on GMiMC-crf is given in Section 3.2.<br/>
+    When iterated too many times, the probability of the aforementioned truncated differ<br/>
+    -ential trail drops below the probability of the truncated differential for uniform random<br/>
+    permutations. However, it can be argued that it should still be possible to obtain a<br/>
+    distinguisher as long as enough pairs are available. This observation is used in Section 3.3<br/>
+    to show that the distinguisher from Section 3.1 can cover more rounds.</p><br/>
+    <h2>3.1 An Iterated Truncated Differential Trail</h2><br/>
+    <p>Figure 2 shows an iterated truncated differential A → A with A = {(a, −a, 0, 0) | a ∈ U}<br/>
+        for four rounds of a contracting Feistel cipher with t = 4 branches. The input difference<br/>
+        is represented symbolically on each branch. For instance, the label a corresponds to an<br/>
+        arbitrary nonzero input difference.<br/>
+        In the first round, the probability is one since the output difference b of Fi
+        is arbitrary.<br/>
+        The probability for the second round is 1/(N −1) ∼ 1/N on average, assuming that Fi+1 is<br/>
+        a uniform random permutation. Finally, the truncated differences in the third and fourth<br/>
+        rounds propagate with probability one since a + b − a − b = 0.<br/>
+        A similar trail exists for any number of branches t ≥ 4. In particular, one can simply<br/>
+        set the rightmost t − 2 branches to zero. Since the trail in Figure 2 has the same input<br/>
+        and output set, it can be iterated. For r divisible by t, we obtain an r round trail with<br/>
+        probability ptrail = 1/(N − 1)r/t ∼ 1/Nr/t
+        .<br/>
+        For a random permutation, however, the probability of A → A is pideal = (N −1)/(Nt −<br/>
+        1) ∼ 1/Nt−1
+        . Hence, if pideal = o(ptrail), one obtains an r-round distinguisher using<br/>
+        approximately 1/ptrail = Nr/t data. It follows that a t-branch contracting Feistel cipher<br/>
+        </p>
+</div>
+<div class="page8">
+    <h4>146 Truncated Differential Attacks on Contracting Feistel Ciphers</h4>
+<hr />
+<img src="./images/page3.jpg" alt="drawing" style="width:30rem;height:30rem">
+</div>
+</div>
+<div class="pge8">
+<b style="color:black">Figure 2:</b> Truncated differential for a contracting generalized Feistel cipher with t = 4<br/>
+    branches. The probability of this trail is 1/N. In characteristic two, the minus signs may<br/>
+    be dropped.<br/>
+    must have r > t2 − 2t rounds to be secure. Furthermore, the attack on t
+    2 − 2t rounds<br/>
+    requires Nt−2 data.<br/>
+    In fact, the above can be improved by prepending t − 2 rounds to the trail as shown<br/>
+    in Figure 3 for t = 4. Since this modification does not affect preal or pideal, one obtains a<br/>
+    distinguisher on t
+    2 − t − 2 rounds with Nt−2 data.<br/>
+    A further extension by appending at most t−2 rounds to the trail is possible. However,<br/>
+    appending s rounds increases pideal to (N − 1)/(Nt−s − 1) ∼ 1/Nt−s−1
+    . Hence, appending<br/>
+    rounds does not lead to an attack on more rounds. Nevertheless, for a smaller number of<br/>
+    rounds, appending t − 2 rounds may lead to a lower data-complexity. Optimizing for the<br/>
+    number of rounds, we obtain the following result.<br/>
+    <b style="color:black">Result 1.</b><i> A generic contracting Feistel cipher with t branches and t
+        2 −t−2 rounds can be<br/>
+    distinguished from a uniform random permutation with advantage Θ(1) using Nt−2 data.</i></p><br/>
+    <b style="color:black">Application to generic contracting Feistel ciphers</b>. Result 1 implies that the number<br/>
+    of rounds of a contracting Feistel cipher must scale quadratically with the number of<br/>
+    branches. For a large enough number of branches, this is a significant improvement over<br/>
+    the attacks by Patarin et al. [PNB06] and Guo et al. [GJNS16], who showed that the<br/>
+    </p>
+</div>
+<div class="page9">
+    <h4>Tim Beyne and Yunwen Liu 147</h4>
+    <hr />
+    <img src="./images/page4.jpg" alt="drawing" style="width:30rem;height:30rem">
+</div>
+<div class="pge9">
+    <p>Figure 3: Prepending t − 2 rounds to the trail from Figure 2 with probability one. In<br/>
+        characteristic two, the minus signs may be dropped.<br/><br/>
+        number of rounds must scale linearly with the number of branches. However, note that for<br/>
+        the most interesting applications small values of t are of particular importance. Hence, a<br/>
+        more detailed comparison is necessary.<br/>
+        The distinguishers of Patarin et al. [PNB06] consider a more general form of contracting<br/>
+        Feistel ciphers, but cover at most 2t − 1 rounds. Hence, Result 1 improves over this for<br/>
+        all t ≥ 4. Guo et al. [GJNS16] describe key-recovery attacks up to 5t − 4 rounds when<br/>
+        the key length is tlog2 N bits. By guessing the last round key, The distinguisher above is<br/>
+        easily adapted to a key-recovery attack on t
+        2 −t−1 rounds with time-complexity Oe(Nt−1
+        ).<br/>
+        Hence, Result 1 improves over the attacks of Guo et al. <b>[GJNS16]</b> for t ≥ 6.<br/><br/>
+        <b style="color: black;">Application to GMiMC-crf.</b> Result 1 yields a full-round attack on some instances of<br/>
+        GMiMC-crf [AGP+19] with tlog2 N-bit keys. Indeed, GMiMC-crf has roughly t(t + 3)/2 + 1<br/>
+        rounds when t is large compared to log2 N. To the best of our knowledge, this is the first<br/>
+        result violating the security claims of GMiMC-crf – albeit not for the most practically<br/>
+        relevant instances. In fact, in this setting, the number of rounds of GMiMC-crf is roughly<br/>
+        determined by a truncated differential attack from <b>[AGP+19]</b>. An in-depth analysis of<br/>
+        and comparison with the truncated attack from <b>[AGP+19]</b> is given in Section 3.2. The<br/>
+        instances of <b color="black">GMiMC-crf</b>  with log2 N-bit keys are less interesting, since they are vulnerable<br/>
+        to a simple birthday-bound attack <b>[Bon19]</b>. However, our attacks are also applicable to<br/>
+        these instances and would be the best-known attacks if the key-schedule of <b color="black">GMiMC-crf</b> is<br/>
+        modified to thwart the attack from <b>[Bon19]</b>.<br/><br/>
+        Result 1 leaves significant room for improvements. Importantly, even extensions by a<br/>
+        number of rounds linear in t are relevant, since important examples such as SM4 have a<br/>
+        small number of branches. A first improvement is the use of input structures. An affine<br/>
+        space of dimension d over U contains Nd
+        (Nd −1)/2 pairs. This allows reducing the amount<br/>
+        of data. For example, for the truncated differential used in Result 1, one could reduce the<br/>
+        data-complexity to 2Nt−3
+        in this manner. However, the number of rounds that can be<br/>
+        distinguished does not increase as this is determined by the condition pideal = o(ptrail). A<br/>
+        more careful selection of the truncated differential that takes into account the effect of<br/>
+        input structures will lead to further improvements in Section 4.1. A further improvement<br/>
+        </p>
+</div>
+<div class="page10">
+    <h4>148 Truncated Differential Attacks on Contracting Feistel Ciphers</h4>
+    <hr />
+</div>
+<div class="pge10">
+    <p>is introduced in Section 3.3 below, where a distinguisher with ptrail ≤ pideal is proposed.</p><br/>
+    <h2>3.2 Comparison with Previous Distinguishers on GMiMC-crf/erf</h2><br/><br/>
+    <p>As mentioned above, the designers of GMiMC-crf also proposed a truncated differential<br/>
+        attack on a smaller number of rounds [AGP+19, §4.2.1]. Below, we re-evaluate the number<br/>
+        of rounds covered by the latter attack and discuss how the distinguisher from Section 3.1<br/>
+        improves over it. In addition, as discussed in the introduction, the iterated truncated<br/>
+        differential from Section 3.1 is similar to the truncated differential distinguisher on <b style="color: black;">GMiMC</b>
+        <br/>-erf from [BCD+20, §5.2]. The second paragraph below discusses the relation between this<br/>
+        distinguisher and the one from Section 3.1.<br/><br/>
+        GMiMC-crf. The truncated differential trail proposed by the designers of GMiMC <br/>crf [AGP+19, §4.2.1] attempts to minimize the number of active S-boxes. Based on their<br/>
+        analysis, the designers conclude that the trail extends to at most (t+ 1)dt/2×n/(n−1)e ≈<br/>
+        t(t + 1)/2 rounds with n = log2 N. An additional t − 2 rounds can be appended without<br/>
+        decreasing ptrail or pideal. However, as shown below, this estimate is optimistic.<br/>
+        The truncated differential from [AGP+19] is obtained by iterating the (t + 1)-round<br/>
+        truncated differential B → B with B = {(0, 0, . . . , 0, b, −b) | b ∈ U \ {0}}. The authors<br/>
+        analyzed the case U = F
+        n
+        2 and obtained a (t+ 1)-round probability of 2/N2
+        . Their analysis<br/>
+        is not quite generic because it assumes that the round function is differentially 2-uniform.<br/>
+        For a generic contracting Feistel cipher, the probability is ∼ 1/N2
+        instead. Making suitable<br/>
+        adjustments, the analysis in [AGP+19] suggests that the truncated differential can be<br/>
+        iterated t/2 times since (N2
+        )
+        t/2 ≤ Nt
+        . However, this is optimistic because pideal = 1/Nt−1<br/>
+        rather than 1/Nt
+        . In other words, only t/2 − 1 iterations are possible if we require that<br/>
+        pideal = o(ptrail). Appending t − 2 rounds without decreasing ptrail or increasing pideal results<br/>
+        in a distinguisher on (t/2−1)×(t+1)+t−2 = (t+3)(t−2)/2 rounds. Using a distinguisher<br/>
+        with ptrail ≤ pideal as in Section 3.3 below and by taking advantage of input structures, an<br/>
+        extension to t/2 × (t + 1) + t − 2 = (t + 4)(t − 1)/2 rounds might be feasible. However, such<br/>
+        a distinguisher requires Nt data and time and is not likely to achieve a high advantage.<br/>
+        For a large number of branches t, the generic distinguisher from Section 3.1 covers<br/>
+        twice as many rounds. This is despite the fact that it activates more S-boxes for the same<br/>
+        number of rounds. However, the trail in Section 3.1 benefits from the fact that it takes<br/>
+        advantage of probabilistic conditions on the output differences of two consecutive round<br/>
+        functions instead of just one.<br/><br/>
+        GMiMC-erf. The truncated differential trail from Section 3.1 for GMiMC-crf is similar<br/>
+        to that for GMiMC-erf from [BCD+20, §5.5]. GMiMC-erf is an expanding Feistel cipher,<br/>
+        where the round function is applied to the first branch and the result is added to all other<br/>
+        branches. The analysis in [BCD+20] was specific to GMiMC-erf, but it can be generalized<br/>
+        to generic expanding Feistel ciphers. Both truncated differentials are iterative and rely on<br/>
+        the condition that the output differences of two consecutive round functions are opposite.<br/>
+        The t-round probability is 1/N in both cases. However, there are important differences in<br/>
+        terms of the input structure size and pideal.<br/>
+        It is worth noting that expanding and contracting Feistel ciphers are dual constructions.<br/>
+        Due to this, a truncated differential on one construction directly yields a multidimensional<br/>
+        linear approximation for the other. The average-case duality between multidimensional<br/>
+        linear and truncated differential cryptanalysis in turn results in a corresponding truncated<br/>
+        differential for the same construction. However, it can be checked that the truncated<br/>
+        differentials from Section 3.1 and [BCD+20] are not dual to each other.<br/>
+        In the remainder of this paper, several improvements to the basic truncated differential<br/>
+        from Section 3.1 will be introduced. This includes the extension of the distinguisher to<br/>
+        </p>
+
+</div>
+<div class="page11">
+    <h4>Tim Beyne and Yunwen Liu 149</h4>
+    <hr /><br/>
+</div>
+<div class="pge11">
+    <p>the setting with ptrail < pideal in Section 3.3. In Section 4 further improvements will be<br/>
+        made, including taking more advantage of input structures and using dependencies between<br/>
+        input and output differences. We believe that similar improvements might be useful for<br/>
+        expanding Feistel ciphers. However, due to the lack of applications beyond GMiMC-erf,<br/>
+        only contracting Feistel ciphers are considered in this paper.</p><br/>
+    <h1>3.3 Extended Distinguisher with ptrail ≤ pideal</h1><br/>
+    <p>Even when the probability of a truncated differential trail is much lower than the ideal<br/>
+        probability of the corresponding truncated differential, it is sometimes possible to obtain<br/>
+        a distinguisher. Heuristically, the idea is that wrong pairs for a truncated differential<br/>
+        trail behave as if they were encrypted under a uniform random permutation. Hence, one<br/>
+        can argue that the true probability preal of the truncated differential satisfies the folklore<br/>
+        approximation<br/><br/>
+        preal ≈ ptrail + pideal(1 − ptrail) = pideal + ptrail(1 − pideal) ≈ pideal + ptrail . (1)<br/><br/>
+        That is, one expects slightly more right pairs for the cipher than for a random permutation.<br/>
+        We now consider the data-complexity of a distinguisher with ptrail  pideal, and derive a<br/>
+        distinguisher for more than t
+        2 − t − 2 rounds based on exactly the same iterated truncated<br/>
+        differential as in Section 3.1. This is possible because, as was just argued, this truncated<br/>
+        differential has<br/>
+        preal − pideal ≈ ptrail ∼ 1/Nr/t
+        . (2)<br/><br/>
+        Suppose one encrypts D plaintext pairs with differences in the input set of the truncated<br/>
+        differential. After encrypting these pairs under the cipher, we expect to obtain an average<br/>
+        number of Dpreal pairs with a difference in the output set of the truncated differential.<br/>
+        For a random permutation, the expected number of pairs is instead Dpideal. Moreover,<br/>
+        the distribution of the number of right pairs under a random permutation is binomial<br/>
+        with variance pideal(1 − pideal)D ∼ pidealD since pideal  1. To obtain a distinguisher with<br/>
+        advantage Θ(1), we require that the difference between the means of the real an ideal<br/>
+        distribution of the number of valid pairs exceeds the standard deviation of the ideal<br/>
+        distribution:<br/>
+        D (preal − pideal) 
+        p
+        D pideal .<br/>
+        Rewriting the above, we obtain the estimate<br/><br/>
+        D  pideal/(preal − pideal)
+        2
+        . (3)<br/><br/>
+        For a more detailed derivation of this result including a proof that this is optimal, we refer<br/>
+        the reader to Blondeau and Gérard <b>[BG09].</b><br/>
+        By Equation 2 and Equation 3, we get D  pideal N2r/t with pideal ∼ 1/Nt−1
+        . Hence, if<br/>
+        the trail is iterated t−1 times (once more than in Section 3.1), we must have D = Nt−1 pairs.<br/>
+        After prepending t−2 rounds with probability one, a distinguisher on t(t−1)+t−2 = t
+        2−2<br/>
+        rounds is obtained. In fact, it is possible to improve upon this by appending one round<br/>
+        at the end. This increases the ideal probability to approximately 1/Nt−2
+        , so that t
+        2 − 1<br/>
+        rounds can be distinguished using Nt pairs. Using an input structure of size N, these<br/>
+        pairs can be obtained from roughly 2Nt−1 plaintexts. Note that iterating the truncated<br/>
+        differential t times or appending one more round at the end of the trail is not worthwhile,<br/>
+        since that would lead to a data-complexity of Nt.<br/>
+        .</p>
+    <p><b style="color: black;">Result 2. </b><i>A generic contracting Feistel cipher with t branches and t
+        2 − 1 rounds can be<br/>
+        distinguished from a uniform random permutation with advantage Θ(1) using Nt−1 data</i></p>
+</div>
+</div>
+<div class="page12">
+    <h4>150 Truncated Differential Attacks on Contracting Feistel Ciphers</h4>
+    <hr /><br/>
+</div>
+<div class="pge12">
+    <p>Compared to Result 1, the distinguisher with ptrail  pideal covers t + 1 more rounds.<br/>
+        Unlike in Section 3.1, the limiting factor in further improvements is now the amount<br/>
+        of pairs which can be obtained from the input space. Indeed, provided that one has a<br/>
+        sufficiently large input structure, it would be possible to use more than Nt
+        . However, the<br/>
+        trail we considered here had an input structure of size only N. In Section 4.1, truncated<br/>
+        differentials that allow for bigger input structures will be introduced.<br/>
+        Finally, note that for t = 4 (as for SM4), we now obtain a 15 round distinguisher with<br/>
+        a data-complexity of N3
+        . This may be compared with the 16 round key-recovery attack of<br/>
+        Guo et al. [GJNS16] with a similar data-complexity. The distinguisher from Result 1 can<br/>
+        also be extended to a 16 round key-recovery attack, but it requires N4 partial decryption<br/>
+        operations and hence offers only marginal advantage over exhaustive search.</p><br/><br/>
+    <h1>4 Improved Truncated Differential Distinguishers</h1><br/>
+    <p>This section develops our final truncated differential attacks on generic Feistel ciphers.<br/>
+        In Section 4.1, improvements to the distinguisher from Section 3 are obtained by taking<br/>
+        into account input structures and by allowing for dependencies between the input and<br/>
+        output differences. As a result, we obtain distinguishers for t − 1 additional rounds with<br/>
+        the same-data complexity (Result 3). In Section 4.2, we develop an SMT model to show<br/>
+        that (for t = 4), these distinguishers are indeed optimal. We report on the experimental<br/>
+        verification of our results in Section 4.3.</p><br/>
+        <h2>4.1 Input Structures and Input-Output Dependencies
+        </h2><br/>
+        <p>As discussed at the end of Section 3.3, the number of rounds that can be distinguished using<br/>
+            the truncated differential from Section 3 is primarily limited by the dimension of the input<br/>
+            space. Indeed, if the dimension d of the input structure is large enough, then the number of<br/>
+            pairs used in the attack can exceed Nt while keeping the data- and time-complexity below<br/>
+            Nt
+            . In particular, one can obtain up to Nd
+            (Nd − 1)/2 ∼ N2d/2 pairs for each structure of<br/>
+            size Nd
+            . A larger dimension d leads to a distinguisher for more rounds, ceteris paribus. In<br/>
+            principle d can be up to t − 1, but the trade-off with the probability ptrail of the trail as<br/>
+            well as the ideal probability pideal should be kept in mind. Note that when using structures,<br/>
+            the time-complexity of the distinguisher is still equal to the data-complexity. Indeed, one<br/>
+            can count the number of occurrences of the relevant parts of the output and store them in<br/>
+            a table. After sorting, the number of valid pairs can be determined by iterating through<br/>
+            the table once.<br/><br/>
+            Iterative truncated differential with larger d. In Figure 4, an iterative truncated differ<br/>
+            -ential for t = 4 is shown. Whereas the truncated differential from Section 3 had input<br/>
+            structures of dimension one, the truncated differential in Figure 4 has d = 2. Importantly,<br/>
+            this is achieved by allowing dependencies between the input and output differences. Recall<br/>
+            from Section 2, section 2, that this can be described formally by considering the input <br/>
+            extended cipher. The probability of the four-round trail in Figure 4 is ∼ 1/N, and the<br/>
+            ideal probability is pideal ∼ 1/N3
+            .<br/>
+            The trail from Figure <span>4</span> can be generalized to t branches by considering the following<br/>
+            input difference structure:<br/><br/>
+            (a1, a2, . . . , at−2, b, b) such that Xt−2
+            i=1
+            ai = −b ,<br/><br/>
+            with a1, . . . , at−2, b ∈ U not all zero. Like the trail from Section 3, this iterated trail covers<br/>
+            r rounds with ptrail ∼ 1/Nr/t for r a multiple of t. Furthermore, the input structure has<br/>
+            dimension d = t − 2 and pideal ∼ 1/N3.<br/>
+            </p>
+</div>
+<div class="page13">
+    <h4>Tim Beyne and Yunwen Liu 151</h4>
+    <hr /><br/>
+    <img src="./images/page5.jpg" alt="drawing" style="width:30rem;height:30rem">
+</div>
+<div class="pge13">
+    <p><b>Figure 4:</b> Truncated differential for a contracting generalized Feistel cipher with t = 4
+        branches. <br/>The probability of this trail is 1/N. In characteristic two, the minus signs may
+        be dropped.
+        </p>
+</div>
+<div class="page14">
+    <h4>152 Truncated Differential Attacks on Contracting Feistel Ciphers</h4>
+    <hr /><br/>
+</div>
+<div class="pge14">
+    <p>There are several ways to extend the iterative trail from above by additional rounds,<br/>
+        such as prepending two rounds or appending t − 2 rounds. However, extending the number<br/>
+        of rounds is not necessarily optimal as it may lead to a smaller d or a higher ideal probability<br/>
+        pideal. The next paragraph analyzes the available trade-offs in detail.<br/><br/>
+        <b style="color: black;">Trade-off analysis.</b> Suppose we iterate the trail from Figure 4 m times, covering m t<br/>
+        rounds. Further assume that when the trail is deterministically extended by s rounds, the<br/>
+        input structure dimension is d and let i be an integer such that pideal ∼ 1/Ni
+        . As discussed<br/>
+        in Section 3.3 on eq. (3), the number of pairs D required for the attack is then<br/><br/>
+        <div class="my">D ∼ pideal/(preal − pideal)
+            2 = N
+            2m−i
+            ,</div>
+        <br/><br/>
+        since preal − pideal ∼ 1/Nm. Since the maximum number of pairs that can be obtained<br/>
+        is Nt−d Nd
+        (Nd − 1)/2 ∼ Nt+d/2, we must have D  Nt+d
+        . Hence, 2m − i ≤ t + d or<br/>
+        equivalently m ≤ b(t + d + i)/2c. It follows that the number of rounds r that can be
+        distinguished satisfies<br/><br/>
+        <div class="my"> r ≤ t
+            
+            t + d + i
+            2
+            
+            + s . (4)</div>
+       <br/><br/>
+        This bound is tight. If 2m ≥ 2d+i, then the corresponding data-complexity is Nd N2m−i−2d =<br/>
+        N2m−d−i
+        . Otherwise, the data-complexity is approximately Nm−i/2
+        .<br/>
+        We now consider the possible trade-offs for the iterative trail introduced above. Note<br/>
+        that it is always possible to prepend two rounds to the trail, without affecting the trail<br/>
+        probability or pideal. If no further rounds are appended, then i = 3 as discussed above. It<br/>
+        then follows from Equation 4 with s = 2 and d = t − 2 that r = tbt + 1/2c + 2 = t
+        2 + 2<br/>
+        rounds can be distinguished using Nt−1 data. If instead an additional t − 2 rounds are<br/>
+        appended, then i = 2 and s = t. Hence,<span>Equation 4</span>  yields a distinguisher on r = t
+        2 + t<br/>
+        rounds with Nt data. This data-complexity is only marginally acceptable. If we choose<br/>
+        m = t − 1 instead of m = t, then a distinguisher for t
+        2
+        rounds with Nt−2 data is obtained.<br/>
+        It is also possible to append t − 1 rounds, but this yields i = 1 and is not worthwhile.<br/>
+        Alternatively, it is possible to use a slightly larger input structure. Indeed, consider<br/>
+        input differences of the following form:<br/>
+        (a1, a2, . . . , at−2, b, b),<br/>
+        with a1, . . . , at−2, b ∈ U not all zero. This is an input structure of dimension d = t − 1.<br/>
+        Importantly, this can be connected to the iterative trail from above with probability ∼ 1/N.<br/>
+        With the input structure above, it is not possible to prepend rounds without decreasing<br/>
+        d. If no rounds are appended, then i = 3 and s = 0. Hence, Equation 4 yields that there<br/>
+        is a distinguisher on tbt + 1c = t
+        2 + t rounds with Nt data. Again, the data-complexity<br/>
+        of this distinguisher is only marginally acceptable. Choosing m = t instead, a t
+        2
+        -round<br/>
+        distinguisher with lower data-complexity is obtained. However, since 2t < 2(t − 1) + 3, the<br/>
+        data-complexity is Nt−1.5 – higher than for the t
+        2
+        -round distinguisher from above. Finally,<br/>
+        suppose we append t − 2 rounds such that i = 2 and s = t − 2. By Equation 4, one can<br/>
+        then distinguish up to tbt + 1/2c + t − 2 = t
+        2 + t − 2 rounds with Nt−1 data.<br/>
+        <b style="color: black;">Overview of the best distinguishers.</b> Summarizing the results from the trade-off analysis,<br/>
+        we obtain Result 3. Note that these distinguishers cover more rounds than those mentioned<br/>
+        in Results 1 and 2. More importantly, they improve over previous generic attacks on<br/>
+        contracting Feistel ciphers for any number of branches</p><br/>
+        <p><b>Result 3.</b><i>For a generic contracting Feistel cipher with t branches, we have the following<br/>
+            distinguishers from a uniform random permutation:
+            </i></p><br>
+</div>
+<div class="page15">
+    <h4>Tim Beyne and Yunwen Liu 153</h4>
+    <hr /><br/>
+</div>
+<div class="pge15">
+    <p>• t
+        2 + t − 2 rounds using Nt−1 data,<br/>
+        • t
+        2
+        rounds using Nt−2 data.<br/>
+        <i>Each of these distinguishers achieves an advantage of Θ(1).</i><br/>
+        The case t = 4 is of particular relevance, since the corresponding results yields a<br/>
+        distinguisher on 16 rounds of SM4 with 2
+        <sup>64</sup> data and time and on 18 rounds with 2
+        <sup>96</sup><br/>
+        data and time. In Section 5, it will be discussed how the distinguishers in Result 3 can<br/>
+        be turned into key-recovery attacks on slightly more rounds. It will be demonstrated in<br/>
+        Section 6 that this leads to the best-known key-recovery attack on 17-round SM4.</p><br/>
+        <h2>4.2 Modelling Truncated Differentials using SMT</h2><br/>
+        <p>In this section, we show how to model the propagation of truncated differentials through a<br/>
+            generic contracting Feistel cipher as a Satisfiability Modulo Theories (SMT) problem. For<br/>
+            simplicity, we restrict ourselves to the case with base field F2. An important feature of the<br/>
+            model is that it can be used to find distinguishers with ptrail  pideal. In addition, relations<br/>
+            between the input and output variables are accounted for. This is important to verify the<br/>
+            distinguishers from Section 4.1. To automate the process of finding truncated differentials<br/>
+            by SMT solving, we need to model the truncated differences and the corresponding<br/>
+            transition rules by properly defined variables and constraints. Our implementation is<br/>
+            based on PyBoolector [NPB14] and is available at <br/><a href="https://homes.esat.kuleuven/">https://homes.esat.kuleuven.be/~tbeyne/contracting-feistels.zip</a></p><br/>
+            <p><b class="black">Variables</b>For each nonzero truncated difference in our model, it is either a new vari<br/>-able or a linear combination of previous variables. In order to simplify checking linear<br/>
+                (in)dependence, we use a bitvector variable to represent the truncated difference on each<br/>
+                branch. The zero bitvector represents the zero difference. However, nonzero bitvectors do<br/>
+                not correspond to a specific difference and should be thought of as symbolic variables.<br/>
+                Specifically, a bitvector with Hamming weight one represents a free variable, i.e. one<br/>
+                that is not a linear combination of other variables. Linearly independent truncated<br/>
+                differences are represented by distinct bitvectors. Truncated differences that are linear<br/>
+                combinations of other differences (with coefficients zero or one, as we work over F2) can<br/>
+                then be represented by a bitvector with Hamming weight two or higher.<br/>
+                The length of the bitvectors is determined by the maximum number of free variables.<br/>
+                Specifically, the truncated differences for an r-round t-branch contracting Feistel structure<br/>
+                contain at most r + t independent variables, including the input differences and the output<br/>
+                differences of the round functions Fi with i = 1, . . . , r. Hence, bitvectors of length r + t<br/>
+                are sufficient.<br/>
+                Finally, the model keeps track of the probabilities ptrail and pideal and represents<br/>
+                them by their integer weights wt(ptrail) and wt(pideal) such that ptrail ∼ 1/Nwt(ptrail) and<br/>
+                pideal ∼ 1/Nwt(pideal)
+                . In addition, the probability pi of the truncated differential in round i<br/>
+                of the trail has weight wt(pi). If a probability is zero, we formally denote its weight by ∞.<br/>  
+                Within the SMT model, infinite weights are excluded by appropriate constraints.<br/><br/>
+                Constraints. Under the Markov cipher assumption, the average trail probability satisfies<br/>
+                ptrail =
+                Qr
+                i=1 pi
+                . Equivalently, the weights must satisfy the constraint<br/><br/>
+                wt(ptrail) = Xr
+                i=1
+                wt(pi).<br/><br/>
+                Based on the above, additional constraints for wt(ptrail) 6= ∞ are relatively easy to deduce.<br/>
+                To ensure that ptrail 6= 0, the first t − 1 branches of each output difference must equal the<br/>
+                </p>
+</div>
+<div class="page16">
+    <h4>154 Truncated Differential Attacks on Contracting Feistel Ciphers</h4>
+    <hr /><br/>
+</div>
+<div class="pge16">
+    <p>last t − 1 branches of the output difference. Furthermore, since the round function is a<br/>
+        permutation, the output difference of the round function is zero if and only if the input<br/>
+        difference, i.e. the exclusive or of the bitvectors representing the rightmost t − 1 input<br/>
+        branches, is zero. The weight wt(ptrail) is then equal to the number of round function<br/>
+        output differences that are zero or have Hamming weight at least two (a linear combination<br/>
+        of other variables).<br/>
+        If ptrail < pideal, additional constraints are necessary to avoid trivially invalid trails.<br/>
+        In particular, we require that at least one branch of the differences in each round is a<br/>
+        linear combinations of the differences in preceding branch differences in that round or the<br/>
+        input-branch differences. Linear dependence is modelled recursively.<br/>
+        Finally, we add suitable constraints for wt(pideal) by recursively determining the number<br/>
+        of output variables that are independent of the input variables and previous output<br/>
+        variables.</p><br/>
+        <p><b style="color: black;">Proving optimality using SMT. </b>Using the SMT model introduced above, we are able<br/>
+            to verify the correctness of the differential distinguishers from Section 4.1. To this end,<br/>
+            we place a constraint on the trail weight for fixed values of the input structure dimension<br/>
+            and the ideal weight and iteratively increase its value until the problem is found to be<br/>
+            satisfiable. Alternatively, it is possible to optimize the overall weight directly, by modelling<br/>
+            the data-complexity formula from Section 4.1 within the SMT problem.<br/>
+            For t = 4 and r = 16, we obtain the best possible truncated differential distinguishers<br/>
+            (in terms of data-complexity) for all possible values of the input structure size d ∈ {1, 2, 3}<br/>
+            and ideal weight i ∈ {1, 2, 3} within 100 minutes on a standard personal computer. The<br/>
+            distinguisher from Result 3 was one of several solutions with data-complexity N2
+            . No<br/>
+            distinguishers with a lower data-complexity were found.</p><br/>
+            <h2>4.3 Experimental Verification</h2><br/>
+            <p>In this section we experimentally verify the generic distinguishers from Result 3 for t = 4<br/>
+                and N = 28
+                . Let λ = pidealD when the distinguisher (implicitly) generates D pairs. Let<br/>
+                X be a random variable counting the number of right pairs when the distinguisher is<br/>
+                evaluated on a random permutation. If the distinguisher uses a threshold value τ
+                √
+                λ, then<br/>
+                the false-positive rate is<br/><br/>
+                <div class="my" >= Pr [X ≥ λ + τ
+                    √
+                    λ] = Pr [X ≥ (1 + τ /√
+                    λ) λ] .</div><br/><br/>
+                Since PF is the sum of D independent Bernoulli random variables with probability of<br/>
+                success pideal, it follows from the multiplicative Chernoff bound that for 
+                ≤
+                    √
+                    λ,<br/><br/><div class="my">PF ≤ e
+                        −τ
+                        2/3
+                        . (5)</div>
+                     <br/><br/>
+                Choosing τ = 2, we find that the false-positive rate satisfies PF ≤ 0.26. For τ = 3/2, we<br/>
+                get PF ≤ 0.47.<br/>
+                Figure 5 shows the results of the experiments for t = 4 and N = 28
+                . The estimated<br/>
+                success probabilities are shown for τ = 2 (for r = 16) or τ = 3/2 (for r = 18), i.e. a<br/>
+                false-positive rate which is at most 26% or 47%. For r = 16, each datapoint is based on<br/>
+                1000 evaluations of the attack on a contracting Feistel cipher with uniform random round<br/>
+                functions. For r = 18, each estimate is based on 100 experiments.<br/>
+                As expected, the success probability gradually increases when more structures are<br/>
+                used. The experiments show that achieving a high success probability requires slightly<br/>
+                more than N2
+                (for r = 16) or N3
+                (for r = 18) data. Note that the success probabilities<br/>
+                shown in Figure 5 do not represent the maximal advantage that can be achieved using<br/>
+                these distinguishers, since the trade-off between PF and the success probability was not<br/>
+                optimized for these experiments</p>
+</div>
+<div class="page17">
+    <h4>Tim Beyne and Yunwen Liu 155</h4>
+    <hr /><br/>
+    <img src="./images/page6.jpg" alt="drawing" style="width:30rem;height:30rem">
+</div>
+<div class="pge17">
+<p><b style="color: black;">Figure 5: </b>Estimates of the success probability of the distinguishers from Result 3 with<br/>
+    t = 4 and τ = 2 (r = 16) or τ = 3/2 (r = 18) as a function of the data-complexity<br/>
+    (number of structures). The error bars correspond to 95% confidence intervals computed<br/>
+    using the Clopper-Pearson method. Source code to reproduce this figure is available at<br/><span>https://homes.esat.kuleuven.be/~tbeyne/contracting-feistels.zip.</span></p><br/>
+    <h1>5 Key-Recovery Attacks</h1><br/><br/>
+    <p>If the rounds functions F1, . . . , Fr of a contracting Feistel cipher are keyed permutations<br/>
+        rather than random permutations, then it is of interest to consider key-recovery attacks<br/>
+        in addition to distinguishers. For simplicity, assume that the last round key can take N<br/>
+        possible values and the total key length is equal to the block size. This is the case for<br/>
+        both SM4 and the instances of GMiMC-crf that are not vulnerable to the trivial attack<br/>
+        from [Bon19]. The time-complexity of any key-recovery attack can then be at most around<br/>
+        Nt
+        encryption operations.<br/>
+        The distinguisher on t
+        2 + t − 2 rounds from Result 3 could in theory be extended to a<br/>
+        key-recovery attack on t
+        2 + t − 1 rounds with data-complexity slightly larger (to ensure PF<br/>
+        is low enough) than Nt−1 by guessing the last round key. However, the time-complexity<br/>
+        of this attack would be slightly above Nt partial encryptions, which is only a marginal<br/>
+        improvement over brute-force in the most optimistic case.<br/>
+        More realistically, the t
+        2
+        -round distinguisher from Result 3 can be extended to a key <br/>recovery attack on t
+        2 + 1 rounds with data-complexity close to Nt−2 and time-complexity<br/>
+        close to Nt−1
+        . Again, the attack is based on guessing the last round key and partially<br/>
+        decrypting the set of Nt−2
+        ciphertexts. Suppose that we wish to reduce the number of<br/>
+        candidates for the last round key by a fraction 1/N1−δ
+        . By Equation 5 in Section 4.3, this<br/>
+        can be achieved by choosing the distinguisher’s threshold τ such that exp(−τ
+        2/3) ≤ 1/N1−δ
+        .<br/>
+        Equivalently,<br/>
+        <div class="my"> ≥
+            p
+            3(1 − δ) log N ,</div><br/><br/>
+        where log denotes the natural logarithm.<br/>
+        By a similar reasoning as in the derivation of Equation (3), the number of required pairs<br/>
+        D must satisfy D(preal − pideal) ≥ τ
+        √
+        Dpideal. Since pideal ∼ 1/N2 and preal − pideal ∼ Nt−2
+        ,<br/>
+        it follows that<br/><br/>
+        <div class="my">
+            ≥ τ
+            2
+            pideal/(preal − pideal)
+            2 ≈ τ
+            2N
+            2t−4
+            .
+        </div> <br/><br/>
+        Since the input structures have dimension t − 2, the data-complexity becomes τ
+        2Nt−2 =<br/>
+        3(1 − δ) (log N) Nt−2
+        . The overall time-complexity T of the attack is then<br/><br/>
+        <div class="my">≈ N
+            t−1+δ + 3(1 − δ)(log N) N
+            t−1</div> 
+        </p>
+</div>
+<div class="page18">
+    <h4>156 Truncated Differential Attacks on Contracting Feistel Ciphers</h4>
+    <hr /><br/>
+</div>
+<div class="pge18">
+    <p>assuming partial decryption takes  times the time of encryption. The first term is the<br/>
+        remaining guessing cost and the second term is due to the partial decryption of the data.<br/>
+        To minimize the time-complexity, the parameter δ ∈ [0, 1) should be chosen to balance the<br/>
+        terms. For instance, if N = 232 and t = 4 (the case of SM4), then with δ = 0.06140 we get<br/><br/>
+        <div class="my">≈ 2
+            97.96 + 297.96 = 298.96
+            .</div> <br/><br/>
+        This estimate assumes  = 1/16. The corresponding data-complexity is 2
+        69.96
+        .<br/>
+        Alternatively, one could guess more than one round key and rely on a distinguisher<br/>
+        for a smaller number of rounds with a lower data-complexity. However, when optimizing<br/>
+        for the number of rounds covered by the attack, this is typically not worthwhile because<br/>
+        guessing one round key increases the time-complexity by an equal amount as increasing the<br/>
+        length of the truncated differential by t rounds. Nevertheless, this approach is interesting<br/>
+        in the low-data setting. Optimal trails for a smaller number of rounds can be obtained<br/>
+        using the SMT model from Section 4.2, but we leave a detailed analysis of such attacks as<br/>
+        future work.</p><br/><br/>
+        <h1>6 Application to GMiMC-crf and SM4</h1><br/>
+        <p>We now briefly consider the impact of the generic distinguishers and key-recovery attacks<br/>
+            from Section 4 on GMiMC-crf and SM4. In both cases, we obtain improvements over the<br/>
+            state of the art.<br/>
+            <b style="color:black">GMiMC-crf.</b> As mentioned in Section 3, Result 1 already implies a full-round distinguisher<br/>
+            for some instances of GMiMC-crf. Using Result 3, we obtain a distinguisher for t
+            2 + t − 2<br/>
+            rounds. We conclude that for large values of t (relative to log2 N), the number of rounds<br/>
+            of GMiMC-crf must be at least doubled. However, GMiMC-crf is typically instantiated with<br/>
+            t  log2 N so that algebraic attacks are dominant. For these instances of the <b>GMiMC-crf</b><br/>
+            cipher, we do not obtain full-round attacks.<br/><br/>
+            <b>SM4.</b> From Result 3, truncated differential distinguishers on 16- and 18-round SM4 can<br/>
+            be obtained using 2
+            64 and 2
+            96 data respectively. As discussed in Section 5, the generic<br/>
+            16-round distinguisher can be converted into a 17-round key recovery attack with 2
+            69.96<br/>
+            data and 2
+            98.96 time by guessing the last round key. We summarize the attacks on SM4<br/>
+            from our paper and compare them to the main attacks from the literature in Table 1.<br/>
+            In terms of the number of rounds covered, the best attacks are differential and linear<br/>
+            type covering up to 24-round SM4. However, those attacks require a large amount of data<br/>
+            and time. For instance, the 24-round linear attack requires 2
+            127 data and 2
+            127 time (as<br/>
+            measured in arithmetic operations), which is close to the full codebook and the cost of a<br/>
+            brute-force key search. Previous attacks on SM4 aiming at lower data- and time-complexity<br/>
+            were presented by Guo et al. [GJNS16], who give a 16-round key-recovery attack with data<br/>
+            and time complexity of 2
+            99 using a generic meet-in-the-middle approach. Our 16-round<br/>
+            truncated differential distinguisher only requires 2
+            64 data, which significantly improves<br/>
+            over their attack. Our 17-round key-recovery attack has a similar time-complexity, but a<br/>
+            much lower data-complexity.<br/>
+            As far as we know, there is no direct analysis of differential or linear attacks on 16- or<br/>
+            17-round SM4. To make a reasonable comparison, we consider previous differential and<br/>
+            linear attacks with a reduced number of rounds. We claim that our 17-round key-recovery<br/>
+            attack improves over reduced-round variants of previous work, for the same or similar<br/>
+            data-complexity. This claim is motivated by the analysis below. For brevity, we assume<br/>
+            the reader is familiar with previous attacks on <b>SM4.</b><br/>
+            The differential attack from Zhao et al. [ZLW18] is very similar to that of Su et<br/>
+            al. [SWZ11], so the latter will be used for reference below. Both attacks are based on<br/>
+            </p>
+</div>
+<div class="page19">
+    <h4>Tim Beyne and Yunwen Liu 157</h4>
+    <hr /><br/>
+</div>
+<div class="pge19">
+<p><b style="color:black">Table 1:</b>An overview of attacks on the SM4 block cipher. Attacks marked by † are<br/>
+    distinguishers, the others are key-recovery attacks.</p><br/>
+    <img src="./images/page7.jpg" alt="drawing" style="width:30rem;height:30rem"><br/>
+    <p>multiple 19-round differentials with the same output difference. The key-recovery appends<br/>
+        four rounds. If the 19 round differentials are restricted to 12 rounds, they have probabilities<br/>
+        between 2
+        −84 and 2
+        −82. As each structure of 2
+        33 plaintexts contains 2
+        46 pairs, the resulting<br/>
+        data-complexity would be around 2
+        70. However, following [SWZ11, §5.1], appending<br/>
+        five rounds for the key-recovery attack would have a time-complexity larger than 2
+        99, in<br/>
+        particular because there are very little conditions that can be used to filter pairs in the<br/>
+        last round.<br/>
+        More generally, we cannot use any known 13-round differentials because their probability<br/>
+        is too low. There exist other 12-round characteristics with higher probability (optimally<br/>
+        2
+        −67, according to [SWZ11]), but the key-recovery heavily depends on the structure of the<br/>
+        output differences so the analysis from [SWZ11,ZLW18] is then not directly applicable.<br/>
+        In any case, a five-round extension by key-recovery with a time-complexity below 2
+        99 is<br/>
+        questionable.<br/>
+        The other attacks in Table 1 covering more than 18 rounds are linear attacks. Liu<br/>
+        et al. [LLWW17] propose to use a three-round iterative approximation with absolute<br/>
+        correlation 2
+        −3r
+        for r rounds. For 19 rounds this gives an absolute correlation of 2
+        −57
+        ,<br/>
+        and key-recovery extends this by four rounds. To set up a round-reduced variant of this<br/>
+        attack with ≤ 2
+        70 data, the approximation can be extended to at most 11 rounds (absolute<br/>
+        correlation 2
+        −33). However, the key-recovery should then cover 6 rounds, which is not<br/>
+        </p>
+</div>
+<div class="page20">
+    <h4>158 Truncated Differential Attacks on Contracting Feistel Ciphers</h4>
+    <hr /><br/>
+</div>
+<div class="pge20">
+    <p>realistic since 80 bits already have to be guessed for just four rounds.<br/>
+        The work by Liu et al. [LC14] is a multidimensional linear attack, but it only uses<br/>
+        25 linear approximations (extended to 64 in order to apply a multidimensional analysis)<br/>
+        and their absolute correlations are lower than those from [LLWW17]. The key-recovery<br/>
+        appends four rounds and extending this would drive up the time-complexity even more.<br/>
+        Cho and Nyberg [CN11] rely on the 5-round iterative approximations from [ER09].<br/>
+        These have absolute correlation 2
+        −18.4
+        in the last two rounds. Hence, for 13 rounds,<br/>
+        the absolute correlation would be 2
+        −36.8
+        . This gives a data-complexity of around 2
+        73.6
+        .<br/>
+        Using multiple approximations as in [CN11], a rough estimate suggests a data-complexity<br/>
+        similar to that of our 17-round key-recovery attack. However, this improvement will<br/>
+        only be achieved if some internal roundkey bits are guessed (signs of the correlations<br/>
+        must be guessed). Due to this, the key-recovery strategy of [CN11] only covers three<br/>
+        rounds. In particular, they guess 88 key bits from the initial and final rounds as well as 34<br/>
+        internal roundkey bits. Hence, only a 16 round key-recovery attack is obtained and with a<br/>
+        time-complexity above 2
+        99
+        .</p><br/><br/>
+        <div class="space">
+            <h1>References</h1>
+            <b style="color:black">[AGP+19]</b><p> Martin R. Albrecht, Lorenzo Grassi, Léo Perrin, Sebastian Ramacher, Christian<br/>
+                Rechberger, Dragos Rotaru, Arnab Roy, and Markus Schofnegger. Feistel<br/>
+                structures for MPC, and more. In Kazue Sako, Steve Schneider, and Peter<br/>
+                Y. A. Ryan, editors, ESORICS 2019, Part II, volume 11736 of LNCS, pages<br/>
+                151–171. Springer, Heidelberg, September 2019.</p><br/>
+            <b style="color:black">[BCD+20]</b><p>Tim Beyne, Anne Canteaut, Itai Dinur, Maria Eichlseder, Gregor Leander,<br/>
+                Gaëtan Leurent, María Naya-Plasencia, Léo Perrin, Yu Sasaki, Yosuke Todo,<br/>
+                and Friedrich Wiemer. Out of oddity - new cryptanalytic techniques against<br/>
+                symmetric primitives optimized for integrity proof systems. In Daniele Mic<br/>ciancio and Thomas Ristenpart, editors, CRYPTO 2020, Part III, volume<br/>
+                12172 of LNCS, pages 299–328. Springer, Heidelberg, August 2020.</p><br/>
+            <b style="color:black">[BG09]</b><p>Céline Blondeau and Benoît Gérard. On the data complexity of statistical<br/>
+                attacks against block ciphers (full version). Cryptology ePrint Archive, Report<br/>
+                2009/064, 2009.<a href="https://eprint.iacr.org/2009/064">https://eprint.iacr.org/2009/064</a></p><br/>
+            <b style="color:black">[Bon19]</b><p>Xavier Bonnetain. Collisions on Feistel-MiMC and univariate GMiMC. Cryp
+                <br/>tology ePrint Archive, Report 2019/951, 2019. <a href="https://eprint.iacr.org/">https://eprint.iacr.org/</a></p><br/>
+            <b style="color:black">[BS91]</b><p>Eli Biham and Adi Shamir. Differential cryptanalysis of DES-like cryptosystems.<br/>
+                In Alfred J. Menezes and Scott A. Vanstone, editors, CRYPTO’90, volume<br/>
+                537 of LNCS, pages 2–21. Springer, Heidelberg, August 1991.</p><br/>
+            <b style="color:black">[CN11]</b><p>Joo Yeon Cho and Kaisa Nyberg. Improved linear cryptanalysis of SMS4 block<br/>
+                cipher. In Workshop Record of SKEW 2011, 2011.<br/>
+                </p><br/>
+            <b style="color:black">[Dt08]</b><p>Whitfield Diffie and George Ledin (translators). SMS4 encryption algorithm<br/>
+                for wireless networks. Cryptology ePrint Archive, Report 2008/329, 2008.<br/><a href="https://eprint.iacr.org/2008/329">https://eprint.iacr.org/2008/329</a></p><br/>
+            <b style="color:black">[ER09]</b><p>Jonathan Etrog and Matthew J. B. Robshaw. The cryptanalysis of reduced<br/>round SMS4. In Roberto Maria Avanzi, Liam Keliher, and Francesco Sica,<br/>
+                editors, SAC 2008, volume 5381 of LNCS, pages 51–65. Springer, Heidelberg,<br/>
+                August 2009</p><br/>
+            </div>
+</div>
+<div class="page21">
+    <h4>Tim Beyne and Yunwen Liu 159</h4>
+    <hr /><br/>
+</div>
+<div class="pge21">
+    <b style="color:black">[GJNS16]</b><p>Jian Guo, Jérémy Jean, Ivica Nikolic, and Yu Sasaki. Meet-in-the-middle<br/>
+        attacks on classes of contracting and expanding Feistel constructions. IACR<br/>
+        Trans. Symm. Cryptol., 2016(2):307–337, 2016</p><br/>
+    <b style="color:black">[KKHS08]</b><p>Taehyun Kim, Jongsung Kim, Seokhie Hong, and Jaechul Sung. Linear and<br/>
+        differential cryptanalysis of reduced SMS4 block cipher. Cryptology ePrint<br/>
+        Archive, Report 2008/281, 2008.</p><br/>
+    <b style="color:black">[Knu95]</b><p>Lars R. Knudsen. Truncated and higher order differentials. In Bart Preneel,<br/>
+        editor, FSE’94, volume 1008 of LNCS, pages 196–211. Springer, Heidelberg,<br/>
+        December 1995</p><br/>
+    <b style="color:black">[KWX13]</b><p>Xianglong Kong, Wei Wang, and Qiuliang Xu. Improved rectangle attack on<br/>
+        SMS4 reduced to 18 rounds. In Ninth International Conference on Computa<br/>tional Intelligence and Security, CIS 2013, Emei Mountain, Sichan Province,<br/>
+        China, December 14-15, 2013, pages 575–578. IEEE Computer Society, 2013.</p><br/>
+    <b style="color:black">[LC14]</b><p>Mingjie Liu and Jiazhe Chen. Improved linear attacks on the chinese block<br/>
+        cipher standard. J. Comput. Sci. Technol., 29(6):1123–1133, 2014</p><br/>
+    <b style="color:black">[LGZ10]</b><p>Zhiqiang Liu, Dawu Gu, and Jing Zhang. Multiple linear cryptanalysis of<br/>
+        reduced-round SMS4 block cipher. Chinese Journal of Electronics, 19-3:389–<br/>
+        393, 2010.</p><br/>
+    <b style="color:black">[LLWW17]</b><p>Xuejia Lai, James L. Massey, and Sean Murphy. Markov ciphers and differential<br/>
+        cryptanalysis. In Donald W. Davies, editor, EUROCRYPT’91, volume 547 of<br/>
+        LNCS, pages 17–38. Springer, Heidelberg, April 1991.</p><br/>
+    <b style="color:black">[LR86]</b><p>Michael Luby and Charles Rackoff. How to construct pseudo-random permuta<br/>tions from pseudo-random functions (abstract). In Hugh C. Williams, editor,<br/>
+        CRYPTO’85, volume 218 of LNCS, page 447. Springer, Heidelberg, August<br/>
+        1986.
+        </p><br/>
+    <b style="color:black">[Lu08]</b><p>Jiqiang Lu. Attacking reduced-round versions of the SMS4 block cipher in<br/>
+        the Chinese WAPI standard. In Sihan Qing, Hideki Imai, and Guilin Wang,<br/>
+        editors, ICICS 07, volume 4861 of LNCS, pages 306–318. Springer, Heidelberg,<br/>
+        December 2008.</p><br/>
+    <b style="color:black">[NPB14]</b><p>Aina Niemetz, Mathias Preiner, and Armin Biere. Boolector 2.0. J. Satisf.<br/>
+        Boolean Model. Comput., 9(1):53–58, 2014.<br/>
+        </p><br/>
+    <b style="color:black">[Nyb96]</b><p>Kaisa Nyberg. Generalized Feistel networks. In Kwangjo Kim and Tsutomu<br/>
+        Matsumoto, editors, ASIACRYPT’96, volume 1163 of LNCS, pages 91–104.<br/>
+        Springer, Heidelberg, November 1996.</p><br/>
+    <b style="color:black">[Pat04]</b><p>Jacques Patarin. Security of random Feistel schemes with 5 or more rounds.<br/>
+        In Matthew Franklin, editor, CRYPTO 2004, volume 3152 of LNCS, pages<br/>
+        106–122. Springer, Heidelberg, August 2004.</p><br/>
+    <b style="color:black">[PNB06]</b><p>Jacques Patarin, Valérie Nachef, and Côme Berbain. Generic attacks on<br/>
+        unbalanced Feistel schemes with contracting functions. In Xuejia Lai and<br/>
+        Kefei Chen, editors, ASIACRYPT 2006, volume 4284 of LNCS, pages 396–411.<br/>
+        Springer, Heidelberg, December 2006.<br/>
+        </p><br/>
+   
+</div>
+<div class="page22">
+    <h4>160 Truncated Differential Attacks on Contracting Feistel Ciphers</h4>
+    <hr /><br/>
+</div>
+<div class="pge22">
+    <b style="color:black">[SG16]</b><p>Heyingxiu Song and Haiying Gao. Multiple differential attack on 21-round<br/>
+        sms4 (in Chinese). Journal of Cryptologic Research, 2016(3(6)):584–595, 2016</p><br/>
+    <b style="color:black">[SK96]</b><p>Bruce Schneier and John Kelsey. Unbalanced Feistel networks and block cipher<br/>
+        design. In Dieter Gollmann, editor, FSE’96, volume 1039 of LNCS, pages<br/>
+        121–144. Springer, Heidelberg, February 1996.</p><br/>
+    <b style="color:black">[SWX12]</b><p>Tao Shi, Wei Wang, and Qiuliang Xu. Improved impossible differential crypt<br/>analysis of SMS4. In Eighth International Conference on Computational<br/>
+        Intelligence and Security, CIS 2012, Guangzhou, China, November 17-18,<br/>
+        2012, pages 492–496. IEEE Computer Society, 2012.</p><br/>
+    <b style="color:black">[SWZ11]</b><p>Bozhan Su, Wenling Wu, and Wentao Zhang. Security of the SMS4 block cipher<br/>
+        against differential cryptanalysis. J. Comput. Sci. Technol., 26(1):130–138,<br/>
+        2011.
+        </p><br/>
+    <b style="color:black">[TD08]</b><p>Deniz Toz and Orr Dunkelman. Analysis of two attacks on reduced-round<br/>
+        versions of the SMS4. In Liqun Chen, Mark Dermot Ryan, and Guilin Wang,<br/>
+        editors, ICICS 08, volume 5308 of LNCS, pages 141–156. Springer, Heidelberg,<br/>
+        October 2008</p><br/>
+    <b style="color:black">[Wan10]</b><p>Gaoli Wang. Improved impossible differential crytanalysis on SMS4. In<br/>
+        Communications and Intelligence Information Security (ICCIIS) 2010, pages<br/>
+        105–108, 2010.</p><br/>
+    <b style="color:black">[YPL11]</b><p>Aaram Yun, Je Hong Park, and Jooyoung Lee. On Lai–Massey and quasi-Feistel<br/>
+        ciphers. Designs, Codes and Cryptography, 58(1):45–72, 2011.</p><br/>
+    <b style="color:black">[ZLW18]</b><p>Yanmin Zhao, Yu Liu, and Meiqin Wang. Improved differential attack on<br/>
+        23-round SMS4 (in Chinese). Journal of Software, 2018(29(9)):2821–2828,<br/>
+        2018.</p><br/>
+    <b style="color:black">[ZMI90]</b><p>Yuliang Zheng, Tsutomu Matsumoto, and Hideki Imai. On the construction of<br/>
+        block ciphers provably secure and not relying on any unproved hypotheses. In<br/>
+        Gilles Brassard, editor, Advances in Cryptology — CRYPTO’ 89 Proceedings,<br/>
+        pages 461–480, New York, NY, 1990. Springer New York.</p><br/>
+    <b style="color:black">[ZWFS09]</b><p>Wentao Zhang, Wenling Wu, Dengguo Feng, and Bozhan Su. Some new<br/>
+        observations on the SMS4 block cipher in the chinese WAPI standard. In Feng<br/>
+        Bao, Hui Li, and Guilin Wang, editors, Information Security Practice and<br/>
+        Experience, 5th International Conference, ISPEC 2009, Xi’an, China, April<br/>
+        13-15, 2009, Proceedings, volume 5451 of Lecture Notes in Computer Science,<br/>
+        pages 324–335. Springer, 2009.</p><br/>
+    <b style="color:black">[ZZW08a]</b><p>Lei Zhang, Wentao Zhang, and Wenling Wu. Cryptanalysis of reduced-round<br/>
+        SMS4 block cipher. In Yi Mu, Willy Susilo, and Jennifer Seberry, editors,<br/>
+        ACISP 08, volume 5107 of LNCS, pages 216–229. Springer, Heidelberg, July
+        2008.<br/>
+        </p>
+</div>
+</div>
+</body>
+
+</html>

@@ -1,0 +1,210 @@
+
+/* first page starts here of css */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+.page{
+  width: 45cm;
+  min-height: 29.7cm;
+  margin: 1cm auto;
+  border: 1px #D3D3D3 solid;
+  border-radius: 5px;
+  background: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  .page {
+    margin: 0;
+    border: initial;
+    border-radius: initial;
+    width: initial;
+    min-height: initial;
+    box-shadow: initial;
+    background: initial;
+    page-break-after: always;
+  }
+}
+
+
+span{
+    color:rgb(222, 66, 92)
+  }
+  hr{
+    width:50%;
+    text-align:center;
+  }
+  .page1 h4{
+    margin-left: 25rem;
+    margin-top: 5rem;
+  }
+  .pge1{
+    margin-left: 70rem;
+    margin-top: -3rem;
+  }
+  
+  .pge2{
+    align-items: center;
+   
+  }
+
+  b{
+    color:green;
+  }
+  .my{
+    margin-left: 10%;
+  }
+
+  .pge3{
+    text-align: center;
+  }
+
+  .pge4{
+    margin-left: 33%;
+  }
+  
+  /* first page ends here */
+
+  .page3{
+    margin-left: 33%;
+  }
+
+  .page4{
+    text-align: center;
+  }
+
+  /* second page ends here */
+  .pge5 {
+    margin-left: 33%;
+  }
+  .page6{
+    text-align: center;
+  }
+  .pge6{
+    margin-left: 33%;
+  }
+
+  .page7{
+    text-align: center;
+  }
+  .pge7{
+    margin-left: 33%;
+  }
+  .page8{
+    text-align: center;
+  }
+  .pge8{
+    margin-left: 33%;
+  }
+  .page9{
+    text-align: center;
+  }
+  .pge9{
+    margin-left: 33%;
+  }
+  .page10{
+    text-align: center;
+  }
+  .pge10{
+    margin-left: 33%;
+  }
+  .page11{
+    text-align: center;
+  }
+  .pge11{
+    margin-left: 33%;
+  }
+  .page12{
+    text-align: center;
+  }
+  .pge12{
+    margin-left: 33%;
+  }
+  .page13{
+    text-align: center;
+  }
+  .pge13{
+    margin-left: 33%;
+  }
+  .page14{
+    text-align: center;
+  }
+  .pge14{
+    margin-left: 33%;
+  }
+  .page15{
+    text-align: center;
+  }
+  .pge15{
+    margin-left: 33%;
+  }
+  .page16{
+    text-align: center;
+  }
+  .pge16{
+    margin-left: 33%;
+  }
+  .page17{
+    text-align: center;
+  }
+  .pge17{
+    margin-left: 33%;
+  }
+  .page18{
+    text-align: center;
+  }
+  .pge18{
+    margin-left: 33%;
+  }
+  .page19{
+    text-align: center;
+  }
+  .pge19{
+    margin-left: 33%;
+  }
+  .page20{
+    text-align: center;
+  }
+  .pge20{
+    margin-left: 33%;
+  }
+  .space{
+    margin-top: -20px;
+    
+  }
+  .space p{
+    margin-top: -20px;
+    margin-left: 80px;
+  }
+  .page21{
+    text-align: center;
+  }
+  .pge21{
+    margin-left: 33%;
+  }
+  .pge21 p{
+    margin-top: -20px;
+    margin-left: 80px;
+  }
+  .page22{
+    text-align: center;
+  }
+  .pge22{
+    margin-left: 33%;
+  }
+  .pge22 p{
+    margin-top: -20px;
+    margin-left: 80px;
+  }
